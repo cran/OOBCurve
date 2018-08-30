@@ -12,7 +12,7 @@ function \code{\link[randomForest]{randomForest}}/\code{\link[ranger]{ranger}} w
 Alternatively you can also use a randomForest or ranger model trained with \code{\link[mlr]{train}} of \href{https://github.com/mlr-org/mlr}{mlr}.}
 
 \item{measures}{List of performance measure(s) of mlr to evaluate. Default is auc only.
-See the \href{http://mlr-org.github.io/mlr-tutorial/release/html/measures/index.html}{mlr tutorial} for a list of available measures 
+See the \href{https://mlr-org.github.io/mlr/articles/measures.html}{mlr tutorial} for a list of available measures 
 for the corresponding task.}
 
 \item{task}{Learning task created by the function \code{\link[mlr]{makeClassifTask}} or \code{\link[mlr]{makeRegrTask}} of \href{https://github.com/mlr-org/mlr}{mlr}.}
@@ -62,4 +62,7 @@ plot(results$mse, type = "l", ylab = "oob-mse", xlab = "ntrees")
 plot(results$mae, type = "l", ylab = "oob-mae", xlab = "ntrees")
 plot(results$rsq, type = "l", ylab = "oob-mae", xlab = "ntrees")
 
+}
+\seealso{
+\code{\link{OOBCurvePars}} for out-of-bag curves of other parameters.
 }

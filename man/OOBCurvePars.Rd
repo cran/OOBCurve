@@ -20,7 +20,7 @@ num.trees has to be set sufficiently high to produce smooth curves.}
 \item{par.vals}{Optional vector of hyperparameter points that should be evaluated. If set, nr.grid is not used anymore. Default is NULL.}
 
 \item{measures}{List of performance measure(s) of mlr to evaluate. Default is mmce for classification and mse for regression.
-See the \href{http://mlr-org.github.io/mlr-tutorial/release/html/measures/index.html}{mlr tutorial} for a list of available measures 
+See the \href{https://mlr-org.github.io/mlr/articles/measures.html}{mlr tutorial} for a list of available measures 
 for the corresponding task.}
 }
 \value{
@@ -45,4 +45,7 @@ plot(results$par.vals, results$performances$mmce, type = "l", xlab = "sample.fra
 
 results = OOBCurvePars(lrn, task, pars = "min.node.size", measures = list(mmce))
 plot(results$par.vals, results$performances$mmce, type = "l", xlab = "min.node.size", ylab = "mmce")}
+}
+\seealso{
+\code{\link{OOBCurve}} for out-of-bag curves dependent on the number of trees.
 }

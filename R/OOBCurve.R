@@ -10,7 +10,7 @@
 #'   Alternatively you can also use a randomForest or ranger model trained with \code{\link[mlr]{train}} of \href{https://github.com/mlr-org/mlr}{mlr}. 
 #' @param measures
 #'   List of performance measure(s) of mlr to evaluate. Default is auc only.
-#'   See the \href{http://mlr-org.github.io/mlr-tutorial/release/html/measures/index.html}{mlr tutorial} for a list of available measures 
+#'   See the \href{https://mlr-org.github.io/mlr/articles/measures.html}{mlr tutorial} for a list of available measures 
 #'   for the corresponding task.
 #' @param task
 #'   Learning task created by the function \code{\link[mlr]{makeClassifTask}} or \code{\link[mlr]{makeRegrTask}} of \href{https://github.com/mlr-org/mlr}{mlr}. 
@@ -21,6 +21,7 @@
 #' @export
 #' @importFrom mlr auc
 #' @importFrom stats predict
+#' @seealso \code{\link{OOBCurvePars}} for out-of-bag curves of other parameters.
 #' @examples
 #' 
 #' library(mlr)
@@ -84,6 +85,7 @@ OOBCurve.ranger = function(mod, measures = list(auc), task, data) {
   inbag = do.call(cbind, mod$inbag.counts)
   
   if (tasktype == "classif") {
+    predict.type = "prob"
     ntree = mod$num.trees
     nobs = length(mod$predictions)
     num_levels = nlevels(truth)
@@ -94,13 +96,20 @@ OOBCurve.ranger = function(mod, measures = list(auc), task, data) {
       predis = predis * ((inbag == 0) * 1) # only use observations that are out of bag
       prob_array[, , i] = rowCumsums(predis) * (1 / rowCumsums((inbag == 0) * 1)) # divide by the number of observations that are out of bag
     }
-    result = data.frame(t(apply(prob_array, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = "prob"))))
   }
   if (tasktype == "regr") {
+    predict.type = "response"
     preds$predictions = preds$predictions * ((inbag == 0) * 1) # only use observations that are out of bag
-    predis = rowCumsums(preds$predictions) * (1 / rowCumsums((inbag == 0) * 1))
-    result = data.frame(t(apply(predis, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = "response"))))
+    prob_array = rowCumsums(preds$predictions) * (1 / rowCumsums((inbag == 0) * 1))
   }
+  
+  if(length(measures) == 1) {
+    result = data.frame(apply(prob_array, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = predict.type)))
+    names(result) = measures[[1]]$id
+  } else {
+    result = data.frame(t(apply(prob_array, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = predict.type))))
+  }
+  
   return(result)
 }
 
@@ -115,6 +124,7 @@ OOBCurve.randomForest.formula = function(mod, measures = list(auc), task, data) 
   inbag = mod$inbag
   
   if (tasktype == "classif") {
+    predict.type = "prob"
     ntree = ncol(preds$individual)
     nobs = nrow(preds$individual)
     num_levels = nlevels(preds$aggr)
@@ -125,14 +135,21 @@ OOBCurve.randomForest.formula = function(mod, measures = list(auc), task, data) 
       predis = predis * ((inbag == 0) * 1) # only use observations that are out of bag
       prob_array[, , i] = rowCumsums(predis) * (1 / rowCumsums((inbag == 0) * 1)) # divide by the number of observations that are out of bag
     }
-    result = data.frame(t(apply(prob_array, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = "prob"))))
   }
   
   if (tasktype == "regr") {
+    predict.type = "response"
     preds$individual = preds$individual * ((inbag == 0) * 1) # only use observations that are out of bag
-    predis = rowCumsums(preds$individual) * (1 / rowCumsums((inbag == 0) * 1))
-    result = data.frame(t(apply(predis, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = "response"))))
+    prob_array = rowCumsums(preds$individual) * (1 / rowCumsums((inbag == 0) * 1))
   }
+  
+  if(length(measures) == 1) {
+    result = data.frame(apply(prob_array, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = predict.type)))
+    names(result) = measures[[1]]$id
+  } else {
+    result = data.frame(t(apply(prob_array, 2, function(x) calculateMlrMeasure(x, measures, task, truth, predict.type = predict.type))))
+  }
+  
   return(result)
 }
 

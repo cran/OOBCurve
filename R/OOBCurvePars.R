@@ -17,12 +17,12 @@
 #'   Optional vector of hyperparameter points that should be evaluated. If set, nr.grid is not used anymore. Default is NULL.
 #' @param measures 
 #'   List of performance measure(s) of mlr to evaluate. Default is mmce for classification and mse for regression.
-#'   See the \href{http://mlr-org.github.io/mlr-tutorial/release/html/measures/index.html}{mlr tutorial} for a list of available measures 
+#'   See the \href{https://mlr-org.github.io/mlr/articles/measures.html}{mlr tutorial} for a list of available measures 
 #'   for the corresponding task.
 #' @return 
 #'   Returns a list with parameter values and a list of performances.
 #' @export
-#'
+#' @seealso \code{\link{OOBCurve}} for out-of-bag curves dependent on the number of trees.
 #' @examples
 #' \dontrun{
 #' library(mlr)
